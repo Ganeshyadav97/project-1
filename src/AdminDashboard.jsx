@@ -30,7 +30,7 @@ const AdminDashboard = () => {
         console.log(payload);
       }
 
-      await axios.post(`https://job-poster-1.onrender.com/admin/create${role}`, payload, {
+      await axios.post(`https://project-1-backend-lc17.onrender.com/admin/create${role}`, payload, {
         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       });
 

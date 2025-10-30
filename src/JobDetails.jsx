@@ -11,7 +11,7 @@ const JobDetails = () => {
   // Fetch all applications for this job
   const fetchApplications = async () => {
     try {
-      const res = await axios.get(`https://job-poster-1.onrender.com/company/getapplication/${id}`, {
+      const res = await axios.get(`https://project-1-backend-lc17.onrender.com/company/getapplication/${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setApplications(res.data);
@@ -26,7 +26,7 @@ const JobDetails = () => {
   const updateStatus = async (appId, status) => {
     try {
       await axios.put(
-        `https://job-poster-1.onrender.com/company/status/${appId}`,
+        `https://project-1-backend-lc17.onrender.com/company/status/${appId}`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

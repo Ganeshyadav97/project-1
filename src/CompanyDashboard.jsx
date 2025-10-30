@@ -13,7 +13,7 @@ const CompanyDashboard = () => {
   // Fetch company jobs
   const fetchJobs = async () => {
     try {
-      const res = await axios.get("https://job-poster-1.onrender.com/company/jobs", {
+      const res = await axios.get("https://project-1-backend-lc17.onrender.com/company/jobs", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobs(res.data);
@@ -32,7 +32,7 @@ const CompanyDashboard = () => {
     setLoading(true);
     try {
       await axios.post(
-        "https://job-poster-1.onrender.com/company/post",
+        "https://project-1-backend-lc17.onrender.com/company/post",
         { title, location, description },
         { headers: { Authorization: `Bearer ${token}` } }
       );

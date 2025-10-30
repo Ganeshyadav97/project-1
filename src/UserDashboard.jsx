@@ -8,11 +8,12 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem('token');
+  const BASE_URL = 'https://project-1-backend-lc17.onrender.com';
 
   // Fetch all jobs
   const fetchJobs = async () => {
     try {
-      const res = await axios.get('https://job-poster-1.onrender.com/user/getjobs', {
+      const res = await axios.get(`${BASE_URL}/user/getjobs`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobs(res.data);
@@ -24,7 +25,7 @@ const UserDashboard = () => {
   // Fetch applications of logged-in user
   const fetchApplications = async () => {
     try {
-      const res = await axios.get('https://job-poster-1.onrender.com/user/applications', {
+      const res = await axios.get(`${BASE_URL}/user/applications`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setApplications(res.data);
@@ -52,7 +53,7 @@ const UserDashboard = () => {
   const handleApply = async (jobId) => {
     try {
       const res = await axios.post(
-        `https://job-poster-1.onrender.com/user/apply/${jobId}`,
+        `${BASE_URL}/user/apply/${jobId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -84,7 +85,9 @@ const UserDashboard = () => {
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6">
           <h1 className="text-4xl font-bold text-center">User Dashboard</h1>
-          <p className="text-center mt-2 text-blue-100">Explore jobs and track your applications</p>
+          <p className="text-center mt-2 text-blue-100">
+            Explore jobs and track your applications
+          </p>
         </div>
 
         {/* Content */}
@@ -104,7 +107,9 @@ const UserDashboard = () => {
 
           {/* Available Jobs Section */}
           <section className="mb-10">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">Available Jobs</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+              Available Jobs
+            </h2>
             {jobs.length === 0 ? (
               <p className="text-gray-600">No jobs available at the moment.</p>
             ) : (
@@ -114,14 +119,17 @@ const UserDashboard = () => {
                     key={job._id}
                     className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200"
                   >
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{job.title}</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                      {job.title}
+                    </h3>
                     <p className="text-gray-600 mb-4">{job.description}</p>
                     <div className="text-sm text-gray-500 mb-4">
                       <p>
                         <strong>Company:</strong> {job.company?.name || 'N/A'}
                       </p>
                       <p>
-                        <strong>Location:</strong> {job.company?.location || 'N/A'}
+                        <strong>Location:</strong>{' '}
+                        {job.company?.location || 'N/A'}
                       </p>
                     </div>
                     <button
@@ -133,7 +141,9 @@ const UserDashboard = () => {
                           : 'bg-blue-600 text-white hover:bg-blue-700'
                       }`}
                     >
-                      {hasApplied(job._id) ? 'Already Applied' : 'Apply Now'}
+                      {hasApplied(job._id)
+                        ? 'Already Applied'
+                        : 'Apply Now'}
                     </button>
                   </div>
                 ))}
@@ -143,9 +153,13 @@ const UserDashboard = () => {
 
           {/* My Applications Section */}
           <section>
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">My Applications</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+              My Applications
+            </h2>
             {applications.length === 0 ? (
-              <p className="text-gray-600">You haven't applied to any jobs yet. Start exploring!</p>
+              <p className="text-gray-600">
+                You haven't applied to any jobs yet. Start exploring!
+              </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {applications.map((app) => (
@@ -153,9 +167,12 @@ const UserDashboard = () => {
                     key={app._id}
                     className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm"
                   >
-                    <h3 className="text-lg font-semibold text-gray-800 mb-2">{app.job.title}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                      {app.job.title}
+                    </h3>
                     <p className="text-gray-600 mb-2">
-                      <strong>Company:</strong> {app.job.company?.name || 'N/A'}
+                      <strong>Company:</strong>{' '}
+                      {app.job.company?.name || 'N/A'}
                     </p>
                     <p className="text-sm">
                       <strong>Status:</strong>{' '}
