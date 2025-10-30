@@ -24,11 +24,7 @@ const UserDashboard = () => {
   // Fetch applications of logged-in user
   const fetchApplications = async () => {
     try {
-<<<<<<< HEAD
-      const res = await axios.get('http://localhost:5000/applications', {
-=======
       const res = await axios.get('https://job-poster-1.onrender.com/user/applications', {
->>>>>>> 080b6b7be41490bf9b91a47bb8c4a430405876cd
         headers: { Authorization: `Bearer ${token}` },
       });
       setApplications(res.data);
@@ -56,7 +52,7 @@ const UserDashboard = () => {
   const handleApply = async (jobId) => {
     try {
       const res = await axios.post(
-        `http://localhost:5000/user/apply/${jobId}`,
+        `https://job-poster-1.onrender.com/user/apply/${jobId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -95,11 +91,13 @@ const UserDashboard = () => {
         <div className="p-8">
           {/* Message */}
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
-              message.includes('Error') || message.includes('Please login')
-                ? 'bg-red-50 border border-red-200 text-red-700'
-                : 'bg-green-50 border border-green-200 text-green-700'
-            }`}>
+            <div
+              className={`mb-6 p-4 rounded-lg ${
+                message.includes('Error') || message.includes('Please login')
+                  ? 'bg-red-50 border border-red-200 text-red-700'
+                  : 'bg-green-50 border border-green-200 text-green-700'
+              }`}
+            >
               {message}
             </div>
           )}
@@ -119,8 +117,12 @@ const UserDashboard = () => {
                     <h3 className="text-xl font-semibold text-gray-800 mb-2">{job.title}</h3>
                     <p className="text-gray-600 mb-4">{job.description}</p>
                     <div className="text-sm text-gray-500 mb-4">
-                      <p><strong>Company:</strong> {job.company?.name || 'N/A'}</p>
-                      <p><strong>Location:</strong> {job.company?.location || 'N/A'}</p>
+                      <p>
+                        <strong>Company:</strong> {job.company?.name || 'N/A'}
+                      </p>
+                      <p>
+                        <strong>Location:</strong> {job.company?.location || 'N/A'}
+                      </p>
                     </div>
                     <button
                       onClick={() => handleApply(job._id)}
@@ -152,16 +154,20 @@ const UserDashboard = () => {
                     className="bg-gray-50 border border-gray-200 p-6 rounded-lg shadow-sm"
                   >
                     <h3 className="text-lg font-semibold text-gray-800 mb-2">{app.job.title}</h3>
-                    <p className="text-gray-600 mb-2"><strong>Company:</strong> {app.job.company?.name || 'N/A'}</p>
+                    <p className="text-gray-600 mb-2">
+                      <strong>Company:</strong> {app.job.company?.name || 'N/A'}
+                    </p>
                     <p className="text-sm">
-                      <strong>Status:</strong>{" "}
-                      <span className={`font-medium ${
-                        app.status === 'Accepted'
-                          ? 'text-green-600'
-                          : app.status === 'Rejected'
-                          ? 'text-red-600'
-                          : 'text-yellow-600'
-                      }`}>
+                      <strong>Status:</strong>{' '}
+                      <span
+                        className={`font-medium ${
+                          app.status === 'Accepted'
+                            ? 'text-green-600'
+                            : app.status === 'Rejected'
+                            ? 'text-red-600'
+                            : 'text-yellow-600'
+                        }`}
+                      >
                         {app.status || 'Pending'}
                       </span>
                     </p>
