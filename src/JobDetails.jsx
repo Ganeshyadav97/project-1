@@ -26,7 +26,7 @@ const JobDetails = () => {
   const updateStatus = async (appId, status) => {
     try {
       await axios.put(
-        `https://project-1-backend-lc17.onrender.com/company/status/${appId}`,
+        `http://localhost:5000/company/status/${appId}`,
         { status },
         { headers: { Authorization: `Bearer ${token}` } }
       );

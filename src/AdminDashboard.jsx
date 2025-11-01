@@ -1,169 +1,210 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+import { FaUserShield, FaBuilding, FaCheckCircle, FaExclamationCircle } from 'react-icons/fa'
 
 const AdminDashboard = () => {
-  const [role, setRole] = useState('user'); // user or company
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [location, setLocation] = useState('');
-  const [err, setErr] = useState('');
-  const [success, setSuccess] = useState('');
-  const navigate = useNavigate();
+  const [tab, setTab] = useState('user')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [companyName, setCompanyName] = useState('')
+  const [location, setLocation] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState({ type: '', text: '' })
+  const navigate = useNavigate()
 
-  const handleCreate = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+    setMessage({ type: '', text: '' })
+
     try {
-      setErr('');
-      setSuccess('');
+      let payload =
+        tab === 'user'
+          ? { email, password }
+          : { name: companyName, email, password, location }
 
-      let payload;
-      if (role === 'user') {
-        payload = { email, password };
-      } else {
-        // company requires name, email, password, location
-        if (!companyName || !location) {
-          setErr('Please provide company name and location');
-          return;
-        }
-        payload = { name: companyName, email, password, location };
-        console.log(payload);
-      }
+      await axios.post(
+        `https://project-1-backend-lc17.onrender.com/admin/create${tab}`,
+        payload,
+        { headers: { Authorization: `Bearer ${localStorage.getItem('token')}` } }
+      )
 
-      await axios.post(`https://project-1-backend-lc17.onrender.com/admin/create${role}`, payload, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-      });
+      setMessage({
+        type: 'success',
+        text: `${tab === 'user' ? 'User' : 'Company'} account created successfully!`,
+      })
 
-      setSuccess(`${role === 'user' ? 'User' : 'Company'} account created successfully!`);
-      // reset fields
-      setEmail('');
-      setPassword('');
-      setCompanyName('');
-      setLocation('');
-      navigate('/login');
+      // Reset fields
+      setEmail('')
+      setPassword('')
+      setCompanyName('')
+      setLocation('')
+
+      setTimeout(() => navigate('/login'), 2000)
     } catch (error) {
-      setErr(error.response?.data?.message || 'Something went wrong');
+      setMessage({
+        type: 'error',
+        text: error.response?.data?.message || 'Something went wrong!',
+      })
+    } finally {
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8">
-        <div>
-          <h1 className="text-center text-4xl font-extrabold text-gray-900">
-            Admin Dashboard
-          </h1>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Create new user or company accounts
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4 py-10">
+      <div className="max-w-lg w-full bg-white rounded-2xl shadow-xl p-8 border border-gray-200">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <FaUserShield className="text-indigo-600 text-4xl mx-auto mb-2" />
+          <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+          <p className="text-gray-500 mt-1">
+            Create and manage user or company accounts
           </p>
         </div>
-        <div className="bg-white py-8 px-6 shadow-lg rounded-lg border border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">
-            {role === 'user' ? 'Create User Account' : 'Create Company Account'}
-          </h2>
 
-          {err && (
-            <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-md">
-              {err}
-            </div>
-          )}
-          {success && (
-            <div className="mb-4 p-4 bg-green-50 border border-green-200 text-green-700 rounded-md">
-              {success}
-            </div>
-          )}
-
-          <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleCreate(); }}>
-            <div>
-              <label htmlFor="role" className="block text-sm font-medium text-gray-700">
-                Account Type
-              </label>
-              <select
-                id="role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              >
-                <option value="user">Create User</option>
-                <option value="company">Create Company</option>
-              </select>
-            </div>
-
-            {role === 'company' && (
-              <>
-                <div>
-                  <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
-                    Company Name
-                  </label>
-                  <input
-                    id="companyName"
-                    type="text"
-                    placeholder="Enter company name"
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-                <div>
-                  <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                    Location
-                  </label>
-                  <input
-                    id="location"
-                    type="text"
-                    placeholder="Enter location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                    required
-                  />
-                </div>
-              </>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                Email Address
-              </label>
-              <input
-                id="email"
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
-
-            <div>
-              <button
-                type="submit"
-                className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150 ease-in-out"
-              >
-                Create Account
-              </button>
-            </div>
-          </form>
+        {/* Tabs */}
+        <div className="flex mb-6">
+          <button
+            onClick={() => setTab('user')}
+            className={`w-1/2 py-2 font-medium rounded-l-lg transition-all ${
+              tab === 'user'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            User Account
+          </button>
+          <button
+            onClick={() => setTab('company')}
+            className={`w-1/2 py-2 font-medium rounded-r-lg transition-all ${
+              tab === 'company'
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            Company Account
+          </button>
         </div>
+
+        {/* Alerts */}
+        {message.text && (
+          <div
+            className={`flex items-center gap-2 mb-4 p-3 rounded-md text-sm ${
+              message.type === 'success'
+                ? 'bg-green-50 text-green-700 border border-green-200'
+                : 'bg-red-50 text-red-700 border border-red-200'
+            }`}
+          >
+            {message.type === 'success' ? (
+              <FaCheckCircle className="text-green-600" />
+            ) : (
+              <FaExclamationCircle className="text-red-600" />
+            )}
+            {message.text}
+          </div>
+        )}
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5">
+          {tab === 'company' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Company Name
+                </label>
+                <input
+                  type="text"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  placeholder="Enter company name"
+                  className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Location
+                </label>
+                <input
+                  type="text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  placeholder="Enter company location"
+                  className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+                  required
+                />
+              </div>
+            </>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Email
+            </label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter email"
+              className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Enter password"
+              className="mt-1 block w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full flex justify-center items-center py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg transition duration-150 ease-in-out disabled:opacity-60"
+          >
+            {loading ? (
+              <>
+                <svg
+                  className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  ></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8v8H4z"
+                  ></path>
+                </svg>
+                Creating Account...
+              </>
+            ) : (
+              `Create ${tab === 'user' ? 'User' : 'Company'}`
+            )}
+          </button>
+        </form>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default AdminDashboard;
+export default AdminDashboard
